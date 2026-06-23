@@ -74,7 +74,7 @@ You can optionally define the following functions in each test file:
 - `teardown_function()`: Called after each test function.
 
 ## How does it work across frames?
-`harness.py` runs tests across multiple Blender frames to ensure that the XR state is applied properly.
+`harness.py` runs tests across multiple Blender frames to ensure that the XR state is applied properly, without blocking the main thread.
 
 This is achieved by using app timers, and running each test function as a generator (which yields after each frame).
 
