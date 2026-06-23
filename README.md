@@ -11,6 +11,18 @@
 2. `export OX_USE_SIMULATOR=1`
 3. Run the tests using `/path/to/blender --python /path/to/harness.py`
 
+## Coverage
+- ✔️ XR session start/stop/restart
+- ✔️ Draw handlers and App Timers in XR
+- ✔️ Base Pose tracking (camera/object/custom)
+- ✔️ Headset and controller pose tracking
+- ✔️ Controller input tracking (trigger/squeeze/joystick/buttons/touch)
+- ❌ Viewport clip distances
+- ❌ Controller draw style
+- ❌ Visibility flags (e.g. show camera, light, floor, handles etc)
+- ❌ Passthrough
+- ❌ VR Scene Inspector operators: Fly, Teleport, Strafe
+
 ## Writing tests that span across frames
 It's really easy to write a test that spans across multiple frames. Just use a `yield` statement in your test, and the harness will wait until the next frame to run the code following that `yield`. You can `yield` multiple times.
 
