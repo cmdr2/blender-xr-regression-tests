@@ -1,10 +1,15 @@
 # Regression tests for Blender's XR mode
 
-## Install
-1. Download or clone this repository.
-2. Download and install [ox](https://github.com/ox-runtime/ox/releases).
+Tests Blender's XR API with a virtual XR device (using `ox`). Useful during development and CI.
 
-`ox` is an open-source OpenXR runtime that supports programmatic control of virtual XR devices, and is focused on automated headless testing of OpenXR apps (on Windows/Linux/Mac across OpenGL/Vulkan/Metal).
+`ox` is a new open-source OpenXR runtime that supports programmatic control of virtual XR devices, and is focused on automated headless testing of OpenXR apps. It supports Windows/Linux/Mac across OpenGL/Vulkan/Metal. The screen can be read as a texture for visual testing.
+
+ox runtime will be loaded into the running Blender process, avoiding cross-process communication (i.e. no IPC/HTTP).
+
+This tests repo would ideally move into [Blender's tests folder](https://github.com/blender/blender/tree/main/tests/python).
+
+## Setup
+1. Download [ox](https://github.com/ox-runtime/ox/releases).
 
 ## Run the Tests
 1. `export XR_RUNTIME_JSON=/path/to/ox/ox_runtime.json`
@@ -42,24 +47,29 @@ def test_foo():
 ```
 
 ## Controlling virtual devices
-These tests use [ox_sim.py](https://github.com/ox-runtime/ox-sim-driver/tree/main/wrappers/python) to connect to the virtual XR device in `ox`. `ox_sim.py` is a Pythonic wrapper around the [ox simulator's C-API](https://github.com/ox-runtime/ox-sim-driver/blob/main/include/ox_sim.h).
+The tests use [ox_sim.py](https://github.com/ox-runtime/ox-sim-driver/tree/main/wrappers/python) to connect to the virtual XR device in `ox`. `ox_sim.py` is a Pythonic wrapper around the [ox simulator's C-API](https://github.com/ox-runtime/ox-sim-driver/blob/main/include/ox_sim.h).
 
-See [test_xr_session_state.py](test_xr_session_state.py#L171) for a complete example that uses `ox_sim.py` in a test.
+See [test_xr_session_state.py](test_xr_session_state.py#L173) for a complete example that uses `ox_sim.py` in a test.
 
 Here's a short example that sets the position of the headset and a controller:
 ```python
 def test_foo():
-   headset = sim.device("/user/head")
-   headset.position = Vector((10, 20, 30))  # move the headset
+    state = bpy.context.window_manager.xr_session_state
 
-   right_controller = sim.device("/user/hand/right")
-   right_controller.orientation = Quaternion((0, 1, 0), radians(30))  # rotate the controller
+    headset = sim.device("/user/head")
+    headset.position = Vector((10, 20, 30))  # move the headset
 
-   right_controller.set_input("/input/trigger/value", 0.85)  # press the trigger 85%
+    right_controller = sim.device("/user/hand/right")
+    right_controller.position = Vector((42, 42, 42))
+    right_controller.orientation = Quaternion((0, 1, 0), radians(30))  # rotate the controller
 
-   yield  # until the next frame
+    right_controller.set_input("/input/trigger/value", 0.85)  # press the trigger 85%
 
-   # assert the value of `bpy.context.window_manager.xr_session_state.controller_grip_location_get(bpy.context, 1)`
+    yield  # until the next frame
+
+    loc = state.controller_grip_location_get(bpy.context, 1)
+    expected_loc = openxr_to_blender_vec(right_controller.position)
+    assert vec_equal(loc, expected_loc)
 ```
 
 
