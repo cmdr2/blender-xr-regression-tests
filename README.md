@@ -11,6 +11,8 @@
 2. `export OX_USE_SIMULATOR=1`
 3. Run the tests using `/path/to/blender --python /path/to/harness.py`
 
+A new Blender window will open, and the test results will be printed in the console. The test progress will also be shown in the status bar.
+
 ## Coverage
 - ✔️ XR session start/stop/restart
 - ✔️ Draw handlers and App Timers in XR
