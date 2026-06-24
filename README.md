@@ -2,11 +2,15 @@
 
 Tests Blender's XR API with a virtual XR device (using `ox`). Useful during development and CI.
 
-`ox` is a new open-source OpenXR runtime that supports programmatic control of virtual XR devices, and is focused on automated headless testing of OpenXR apps. It supports Windows/Linux/Mac across OpenGL/Vulkan/Metal. The screen can be read as a texture for visual testing.
-
-ox runtime will be loaded into the running Blender process, avoiding cross-process communication (i.e. no IPC/HTTP).
+The ox runtime will be loaded into the running Blender process, avoiding cross-process communication (i.e. no IPC/HTTP).
 
 This tests repo would ideally move into [Blender's tests folder](https://github.com/blender/blender/tree/main/tests/python).
+
+### What is ox?
+
+`ox` is a new open-source OpenXR runtime that supports programmatic control of virtual XR devices, and is focused on automated headless testing of OpenXR apps.
+
+It supports Windows/Linux/Mac across OpenGL/Vulkan/Metal. The screen can be read as a texture for automated visual testing.
 
 ## Setup
 1. Download [ox](https://github.com/ox-runtime/ox/releases).
