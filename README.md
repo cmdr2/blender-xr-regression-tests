@@ -2,7 +2,7 @@
 
 Tests Blender's XR API with a virtual XR device (using `ox`). Useful during development and CI.
 
-The ox runtime will be loaded into the running Blender process, avoiding cross-process communication (i.e. no IPC/HTTP).
+The ox runtime will run inside the running Blender process, avoiding cross-process communication (i.e. no IPC/HTTP).
 
 This tests repo would ideally move into [Blender's tests folder](https://github.com/blender/blender/tree/main/tests/python).
 
