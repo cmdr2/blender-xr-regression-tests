@@ -9,9 +9,11 @@ This tests repo would ideally move into [Blender's tests folder](https://github.
 <details>
 <summary>What is ox?</summary>
 
-`ox` is a new open-source OpenXR runtime that supports programmatic control of virtual XR devices, and is focused on automated headless testing of OpenXR apps.
+ox is a new lightweight and cross-platform OpenXR runtime for Windows, Linux and Mac. It supports OpenGL, Vulkan and Metal.
 
-It supports Windows/Linux/Mac across OpenGL/Vulkan/Metal. The screen can be read as a texture for automated visual testing.
+The primary purpose of ox is automated testing of OpenXR applications using a virtual OpenXR device. It is useful during development and CI testing.
+
+You can control the virtual device programmatically (e.g. press a button, move the headset, read screen texture etc), and integrate it with your existing test framework and code.
 </details>
 
 ## Setup
