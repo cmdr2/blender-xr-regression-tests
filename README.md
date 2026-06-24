@@ -6,11 +6,13 @@ The ox runtime will be loaded into the running Blender process, avoiding cross-p
 
 This tests repo would ideally move into [Blender's tests folder](https://github.com/blender/blender/tree/main/tests/python).
 
-### What is ox?
+<details>
+<summary>What is ox?</summary>
 
 `ox` is a new open-source OpenXR runtime that supports programmatic control of virtual XR devices, and is focused on automated headless testing of OpenXR apps.
 
 It supports Windows/Linux/Mac across OpenGL/Vulkan/Metal. The screen can be read as a texture for automated visual testing.
+</details>
 
 ## Setup
 1. Download [ox](https://github.com/ox-runtime/ox/releases).
