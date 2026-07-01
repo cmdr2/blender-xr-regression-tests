@@ -31,7 +31,7 @@ A new Blender window will open, and the test results will be printed in the cons
 - ✔️ Draw handlers and App Timers in XR
 - ✔️ Base Pose tracking (camera/object/custom)
 - ✔️ Headset and controller pose tracking
-- ✔️ Controller input tracking (trigger/squeeze/joystick/buttons/touch)
+- ✔️ Controller button input tracking (trigger/squeeze/joystick/buttons/touch)
 - ❌ Viewport clip distances
 - ❌ Controller draw style
 - ❌ Visibility flags (e.g. show camera, light, floor, handles etc)
