@@ -26,6 +26,25 @@ You can control the virtual device programmatically (e.g. press a button, move t
 
 A new Blender window will open, and the test results will be printed in the console. The test progress will also be shown in the status bar.
 
+## Filtering Tests
+By default, every test file and every test function is run. You can narrow this down by passing arguments after `--`:
+
+```sh
+# Run everything (same as omitting -- entirely)
+/path/to/blender --python /path/to/harness.py --
+
+# Run only specific test files (matched by filename, path is ignored)
+/path/to/blender --python /path/to/harness.py -- test_xr_session_state.py test_xr_actions.py
+
+# Run only tests whose function name contains a substring
+/path/to/blender --python /path/to/harness.py -- -k base_pose_type
+
+# Combine both: only run matching tests within the given files
+/path/to/blender --python /path/to/harness.py -- test_xr_session_settings.py -k base_pose_type
+```
+
+Note that `-k` only supports a single plain substring match (no `and`/`or`/expressions).
+
 ## Coverage
 - ✔️ XR session start/stop/restart
 - ✔️ Draw handlers and App Timers in XR

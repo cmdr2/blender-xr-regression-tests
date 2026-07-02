@@ -4,6 +4,7 @@ import os
 import bpy
 import sys
 import inspect
+import argparse
 import traceback
 from pathlib import Path
 
@@ -24,11 +25,17 @@ class Harness:
 
     Each test function's generator is called once per timer callback, until the generator completes or raises an exception.
     This way, each test can yield and continue in the next timer callback, allowing it to run across multiple frames.
+
+    Supports filtering which files/tests run via CLI args (everything after "--"):
+      -- (no args)                          run every test file and every test
+      -- path/to/test1.py path/to/test2.py  run only the named test files (matched by basename)
+      -- -k <filter>                        run only tests whose function name contains <filter>
+      -- path/to/test1.py -k <filter>       combine both: only that file, only matching tests
     """
 
     FRAME_INTERVAL = 1.0 / 30.0  # Run at 30 FPS
 
-    def __init__(self):
+    def __init__(self, args=None):
         self.test_modules = []
         self.test_results = []
         self.curr_test_module = None
@@ -36,14 +43,33 @@ class Harness:
         self.curr_test_gen = None
         self.state = "GET_NEXT_MODULE"
 
+        self.file_filters, self.keyword_filter = self._parse_args(args if args is not None else sys.argv[1:])
+
+    @staticmethod
+    def _parse_args(args):
+        parser = argparse.ArgumentParser(prog="harness.py", add_help=False)
+        parser.add_argument("-k", dest="keyword", default=None, help="substring filter on test function names")
+        parser.add_argument("files", nargs="*", help="specific test files to run (basename match)")
+
+        parsed, _unknown = parser.parse_known_args(args)
+
+        file_filters = [os.path.basename(f) for f in parsed.files]
+        return file_filters, parsed.keyword
+
     def _discover_tests(self):
         # list all files starting with "test_" in the current directory
         dir_path = os.path.dirname(os.path.abspath(__file__))
         test_files = [f for f in os.listdir(dir_path) if f.startswith("test_")]
 
+        # restrict to explicitly requested files, if any were given
+        if self.file_filters:
+            test_files = [f for f in test_files if f in self.file_filters]
+
         # load each module
         for test_file in test_files:
-            self.test_modules.append(TestFileHarness(self, test_file))
+            mod = TestFileHarness(self, test_file, keyword_filter=self.keyword_filter)
+            if mod.tests:  # skip modules left with no tests after filtering
+                self.test_modules.append(mod)
 
         num_tests = sum(len(m.tests) for m in self.test_modules)
         self._log(f"Discovered {num_tests} tests")
@@ -155,7 +181,7 @@ class Harness:
 
 
 class TestFileHarness:
-    def __init__(self, harness, filename):
+    def __init__(self, harness, filename, keyword_filter=None):
         self.harness = harness
         self.filename = filename
         self.fixtures = {
@@ -171,10 +197,18 @@ class TestFileHarness:
         # discover tests
         self.tests = [t for t in self.module.__dict__.values() if callable(t) and t.__name__.startswith("test_")]
 
+        # apply -k filter: keep tests whose name contains the given substring
+        if keyword_filter:
+            self.tests = [t for t in self.tests if keyword_filter in t.__name__]
+
         for fixture in self.fixtures.keys():
             self.fixtures[fixture] = getattr(self.module, fixture, lambda: None)
 
 
 if __name__ == "__main__":
+    import sys
+
+    sys.argv = [__file__] + (sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else [])
+
     h = Harness()
     h.run()
