@@ -70,7 +70,7 @@ def test_foo():
 
     yield  # resumes in the next frame
 
-    assert (state.viewer_pose_location - Vector((42, 42, 42))).length < 0.001
+    assert vec_equal(state.viewer_pose_location, Vector((42, 42, 42)))
 ```
 
 ### How does it work across frames?
