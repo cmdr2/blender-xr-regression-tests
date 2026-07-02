@@ -73,6 +73,13 @@ def test_foo():
     assert (state.viewer_pose_location - Vector((42, 42, 42))).length < 0.001
 ```
 
+### How does it work across frames?
+`harness.py` runs tests across multiple Blender frames to ensure that the XR state is applied properly, without blocking the main thread.
+
+This is achieved by using app timers, and running each test function as a generator (which yields after each frame).
+
+Each test function's generator is called once per timer callback, until the generator completes or raises an exception. This way, each test can yield and continue in the next timer callback, allowing it to run across multiple frames.
+
 ## Controlling virtual devices
 The tests use [ox_sim.py](https://github.com/ox-runtime/ox-sim-driver/tree/main/wrappers/python) to connect to the virtual XR device in `ox`. `ox_sim.py` is a Pythonic wrapper around the [ox simulator's C-API](https://github.com/ox-runtime/ox-sim-driver/blob/main/include/ox_sim.h).
 
@@ -111,10 +118,3 @@ You can optionally define the following functions in each test file:
 - `teardown_module()`: Called once after all tests in that test file.
 - `setup_function()`: Called before each test function.
 - `teardown_function()`: Called after each test function.
-
-## How does it work across frames?
-`harness.py` runs tests across multiple Blender frames to ensure that the XR state is applied properly, without blocking the main thread.
-
-This is achieved by using app timers, and running each test function as a generator (which yields after each frame).
-
-Each test function's generator is called once per timer callback, until the generator completes or raises an exception. This way, each test can yield and continue in the next timer callback, allowing it to run across multiple frames.
